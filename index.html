@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NỘP LỆ PHÍ XE MÁY - TRUNG TÂM MINH KHANG</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* === CSS CƠ BẢN === */
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        
+        /* === CARD TÌM KIẾM === */
+        .search-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 450px; }
+		.welcome { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        h1, h2 { text-align: center; color: #2c3e50; margin-top: 0; }
+        
+        label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #555; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+        input:focus, select:focus { border-color: #007bff; outline: none; }
+        
+        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; margin-top: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background-color: #0056b3; transform: translateY(-2px); }
+        button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
+
+        /* === MODAL (CỬA SỔ BẬT LÊN) === */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Nền tối mờ */
+            display: none; /* Mặc định ẩn */
+            justify-content: center; align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(3px); /* Hiệu ứng mờ kính */
+        }
+
+        .modal-box {
+            background: white; width: 90%; max-width: 500px;
+            border-radius: 12px; padding: 0;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            position: relative;
+            animation: slideDown 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background: #007bff; color: white; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { margin: 0; font-size: 18px; }
+        
+        .close-btn { font-size: 24px; cursor: pointer; color: white; font-weight: bold; }
+        .close-btn:hover { opacity: 0.8; }
+
+        .modal-body { padding: 20px; max-height: 80vh; overflow-y: auto; }
+
+        /* === THÔNG TIN TRONG MODAL === */
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; }
+        .info-row:last-child { border-bottom: none; }
+        .highlight { font-weight: bold; color: #333; }
+        
+        .status-box { margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .pending { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+
+        .qr-img { width: 100%; max-width: 400px; border: 1px solid #ddd; border-radius: 8px; margin: 10px 0; }
+        .note { font-size: 0.9em; color: #666; font-style: italic; }
+		
+		#second {
+			display: none;
+		}
+    </style>
+</head>
+<body>
+	<div id="first" class="welcome">
+		<h1>
+			HỆ THỐNG NỘP LỆ PHÍ XE MÁY
+			<br><br><br>
+			<span style="color:red;">TRUNG TÂM ĐÀO TẠO VÀ SÁT HẠCH LÁI XE MINH KHANG</span>
+		</h1>
+		<h2>
+			<span><i>Luôn đồng hành cùng quý thầy cô và học viên thân yêu !</i></span>
+		</h2>
+		
+		<img src="minhkhang.jpg" style="
+			width: 80%;
+			min-width: 400px;
+			max-width: 500px;
+		">
+	</div>
+	
+    <div id="second" class="search-card">
+		<img src="minhkhang.jpg" style="width:100%"/>
+        <h2 style="text-align: center">NỘP LỆ PHÍ XE MÁY<br>TRUNG TÂM MINH KHANG</h2>
+        
+		<p style="text-align: left">
+			<i>- Học viên vui nhập <u>số báo danh</u>.<br>
+			- Sau đó nhấn <u>kiểm tra</u> để kiểm tra và nộp lệ phí thi.</i>
+		</p>
+		
+        <!-- <label>Ngày thi:</label> -->
+        <!-- <select id="ngayThi"> -->
+            <!-- <option value="">-- Chọn ngày thi --</option> -->
+            <!-- <option value="2025-11-27">Ngày 27/11/2025</option> -->
+            <!-- <option value="2025-11-30">Ngày 30/11/2025</option> -->
+        <!-- </select> -->
+
+        <label>Số báo danh:</label>
+        <input type="number" id="sbd" placeholder="Nhập số báo danh">
+
+        <button onclick="traCuu()" id="btnSearch">🔍 Kiểm Tra</button>
+    </div>
+
+    <div id="resultModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Thông tin</h3>
+                <span class="close-btn" onclick="dongModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+				<div class="info-row"><span>Ngày thi:</span> <span class="highlight" id="resDate">...</span></div>
+				<div class="info-row"><span>Số báo danh:</span> <span class="highlight" id="resSBD">...</span></div>
+				<div class="info-row"><span>Họ tên:</span> <span class="highlight" id="resName">...</span></div>
+				<div class="info-row"><span>Ngày sinh:</span> <span class="highlight" id="resBoD">...</span></div>
+                <div class="info-row"><span>Tổng lệ phí:</span> <span class="highlight" id="resTotal">...</span></div>
+                <div class="info-row"><span>Đã đóng:</span> <span class="highlight" style="color:green" id="resPaid">...</span></div>
+
+                <div id="statusArea"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CẤU HÌNH ---
+        const SUPABASE_URL = 'https://ncanageaezhbvruuylsr.supabase.co'; // Thay URL
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jYW5hZ2VhZXpoYnZydXV5bHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MjY5MjQsImV4cCI6MjA3OTIwMjkyNH0.V4OHDspHDsB1preYgWnbET7YAGl9NinQ7JK_Vn3wBkg'; // Thay KEY
+        <!-- const STK_NGAN_HANG = '9390388633'; -->
+		const STK_NGAN_HANG = '0345678196';     
+        const TEN_NGAN_HANG = 'vpbank'; 
+        // ----------------
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentChannel = null;
+
+        // Hàm mở Modal
+        function moModal() {
+            document.getElementById('resultModal').style.display = 'flex';
+        }
+
+        // Hàm đóng Modal
+        function dongModal() {
+			// 1. Ẩn Modal
+			document.getElementById('resultModal').style.display = 'none';
+			
+			// 2. Quan trọng: Hủy lắng nghe realtime để tiết kiệm tài nguyên
+			if (currentChannel) {
+				supabase.removeChannel(currentChannel);
+				currentChannel = null;
+				console.log("Đã đóng modal và hủy kênh realtime.");
+			}
+		}
+		
+		function isVaildCCCD(cccd){
+			return /^\d{9,12}$/.test(cccd);
+		}
+
+        async function traCuu() {
+            <!-- const ngayThi = document.getElementById('ngayThi').value; -->
+            const sbd = document.getElementById('sbd').value.trim().replace(/^0+/, '');
+			//const sbd = document.getElementById('sbd').value.trim().padStart(5,"0");
+
+            const btn = document.getElementById('btnSearch');
+
+            if(!sbd) return alert("Vui lòng nhập số báo danh!");
+			
+            btn.innerText = "Đang tìm...";
+            btn.disabled = true;
+
+            // Query Database
+            const { data, error } = await supabase
+                .from('thi_sinh')
+                .select('*')
+				.eq('is_car',false)
+                .eq('sbd', sbd)
+                .maybeSingle();
+
+            btn.innerText = "🔍 Kiểm Tra Ngay";
+            btn.disabled = false;
+
+            if (error || !data) {
+                alert("Không tìm thấy thí sinh! Vui lòng kiểm tra lại.");
+            } else {
+                // Tìm thấy -> Mở Modal
+                hienThiKetQua(data);
+                moModal(); // Hiển thị modal lên
+
+                // Kiểm tra nếu còn thiếu tiền thì lắng nghe
+                const conThieu = data.so_tien - (data.da_nop || 0);
+                if (conThieu > 0) {
+                    langNgheThanhToan(data.code);
+                }
+            }
+        }
+
+        function hienThiKetQua(data) {
+            const tongTien = data.so_tien;
+            const daNop = data.da_nop || 0;
+			const code = data.code;
+            const conThieu = tongTien - daNop;
+
+            // Điền thông tin text
+            document.getElementById('resName').innerText = data.ho_ten;
+            document.getElementById('resSBD').innerText = data.sbd;
+			document.getElementById('resBoD').innerText = data.ngay_sinh;
+            document.getElementById('resDate').innerText = formatDate(data.ngay_thi);
+            document.getElementById('resTotal').innerText = formatMoney(tongTien);
+			document.getElementById('resPaid').innerText = formatMoney(daNop);
+			
+            const statusArea = document.getElementById('statusArea');
+
+            if (conThieu <= 0) {
+                // Đủ tiền
+                statusArea.innerHTML = `
+                    <div class="status-box success">
+                        <h3>✅ HOÀN TẤT</h3>
+                        <p>Thí sinh đã nộp đủ lệ phí.</p>
+                    </div>
+                `;
+            } else {
+                // Thiếu tiền
+                const qrLink = `https://api.vietqr.io/image/${TEN_NGAN_HANG}-${STK_NGAN_HANG}-vTPpigL.jpg?amount=${conThieu}&addInfo=${code}`;
+
+				statusArea.innerHTML = `
+					<div class="status-box pending">
+						<p class="note">Mở app ngân hàng quét mã bên dưới.<br>Hệ thống sẽ tự động xác nhận ngay sau khi chuyển khoản.</p>
+						<img src="${qrLink}" class="qr-img" />
+						<p>Mã thanh toán: <strong>${code}</strong></p>
+					</div>
+				`;
+            }
+        }
+
+        function langNgheThanhToan(code) {
+            // Hủy kênh cũ trước khi tạo kênh mới (để an toàn)
+            if (currentChannel) supabase.removeChannel(currentChannel);
+
+            console.log("Bắt đầu lắng nghe:", code);
+            const channel = supabase
+                .channel(`realtime_${code}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'thi_sinh',
+                        filter: `code=eq.${code}`
+                    },
+                    (payload) => {
+                        console.log("Có update:", payload.new);
+                        // Cập nhật lại giao diện trong Modal
+                        hienThiKetQua(payload.new);
+                    }
+                )
+                .subscribe();
+            currentChannel = channel;
+        }
+
+        function formatMoney(num) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
+        }
+
+        function formatDate(dateString) {
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+		
+		setTimeout(()=> {
+			document.getElementById('second').style.display = 'block';
+			document.getElementById('first').style.display = 'none';
+		},3000);
+    </script>
+</body>
+</html>
