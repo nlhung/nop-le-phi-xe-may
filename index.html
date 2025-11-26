@@ -96,6 +96,8 @@
 		<img src="minhkhang.jpg" style="width:100%"/>
         <h2 style="text-align: center">NỘP LỆ PHÍ XE MÁY<br>TRUNG TÂM MINH KHANG</h2>
         
+		<h3 style="text-align: center">Ngày thi: 28/11/2025</h3>
+		
 		<p style="text-align: left">
 			<i>- Học viên vui nhập <u>số báo danh</u>.<br>
 			- Sau đó nhấn <u>kiểm tra</u> để kiểm tra và nộp lệ phí thi.</i>
@@ -137,8 +139,8 @@
         // --- CẤU HÌNH ---
         const SUPABASE_URL = 'https://ncanageaezhbvruuylsr.supabase.co'; // Thay URL
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jYW5hZ2VhZXpoYnZydXV5bHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MjY5MjQsImV4cCI6MjA3OTIwMjkyNH0.V4OHDspHDsB1preYgWnbET7YAGl9NinQ7JK_Vn3wBkg'; // Thay KEY
-        <!-- const STK_NGAN_HANG = '9390388633'; -->
-		const STK_NGAN_HANG = '0345678196';     
+        const STK_NGAN_HANG = '9390388633';
+		<!-- const STK_NGAN_HANG = '0345678196';      -->
         const TEN_NGAN_HANG = 'vpbank'; 
         // ----------------
 
@@ -181,7 +183,7 @@
 
             // Query Database
             const { data, error } = await supabase
-                .from('thi_sinh')
+                .from('xe_may')
                 .select('*')
 				.eq('is_car',false)
                 .eq('sbd', sbd)
@@ -255,7 +257,7 @@
                     {
                         event: 'UPDATE',
                         schema: 'public',
-                        table: 'thi_sinh',
+                        table: 'xe_may',
                         filter: `code=eq.${code}`
                     },
                     (payload) => {
