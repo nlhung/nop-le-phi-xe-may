@@ -96,7 +96,7 @@
 		<img src="minhkhang.jpg" style="width:100%"/>
         <h2 style="text-align: center">NỘP LỆ PHÍ XE MÁY<br>TRUNG TÂM MINH KHANG</h2>
         
-		<h3 style="text-align: center">Ngày thi: 28/11/2025</h3>
+		<h3 style="text-align: center">Ngày thi: 12/12/2025</h3>
 		
 		<p style="text-align: left">
 			<i>- Học viên vui nhập <u>số báo danh</u>.<br>
@@ -185,7 +185,6 @@
             const { data, error } = await supabase
                 .from('xe_may')
                 .select('*')
-				.eq('is_car',false)
                 .eq('sbd', sbd)
                 .maybeSingle();
 
@@ -279,10 +278,10 @@
             return `${day}/${month}/${year}`;
         }
 		
-		<!-- setTimeout(()=> { -->
-			<!-- document.getElementById('second').style.display = 'block'; -->
-			<!-- document.getElementById('first').style.display = 'none'; -->
-		<!-- },3000); -->
+		setTimeout(()=> {
+			document.getElementById('second').style.display = 'block';
+			document.getElementById('first').style.display = 'none';
+		},3000);
     </script>
 </body>
 </html>
