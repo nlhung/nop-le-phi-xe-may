@@ -96,7 +96,7 @@
 		<img src="minhkhang.jpg" style="width:100%"/>
         <h2 style="text-align: center">NỘP LỆ PHÍ XE MÁY<br>TRUNG TÂM MINH KHANG</h2>
         
-		<h3 style="text-align: center">Ngày thi: 12/12/2025</h3>
+		<h3 style="text-align: center">Ngày thi: 18/12/2025</h3>
 		
 		<p style="text-align: left">
 			<i>- Học viên vui nhập <u>số báo danh</u>.<br>
@@ -144,7 +144,7 @@
         const TEN_NGAN_HANG = 'vpbank'; 
         // ----------------
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentChannel = null;
 
         // Hàm mở Modal
@@ -159,7 +159,7 @@
 			
 			// 2. Quan trọng: Hủy lắng nghe realtime để tiết kiệm tài nguyên
 			if (currentChannel) {
-				supabase.removeChannel(currentChannel);
+				supabaseClient.removeChannel(currentChannel);
 				currentChannel = null;
 				console.log("Đã đóng modal và hủy kênh realtime.");
 			}
@@ -182,7 +182,7 @@
             btn.disabled = true;
 
             // Query Database
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('xe_may')
                 .select('*')
                 .eq('sbd', sbd)
@@ -246,10 +246,10 @@
 
         function langNgheThanhToan(code) {
             // Hủy kênh cũ trước khi tạo kênh mới (để an toàn)
-            if (currentChannel) supabase.removeChannel(currentChannel);
+            if (currentChannel) supabaseClient.removeChannel(currentChannel);
 
             console.log("Bắt đầu lắng nghe:", code);
-            const channel = supabase
+            const channel = supabaseClient
                 .channel(`realtime_${code}`)
                 .on(
                     'postgres_changes',
